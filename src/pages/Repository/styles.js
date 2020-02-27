@@ -42,7 +42,8 @@ export const Owner = styled.header`
 `;
 
 export const IssueContent = styled.div`
-    display: flex;
+    display: ${props => (props.show ? 'flex' : 'none')};
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 427px;
@@ -139,5 +140,10 @@ export const ButtonRow = styled.div`
         width: 100px;
         font-weight: bold;
         color: #fff;
+
+        &[disabled] {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     }
 `;

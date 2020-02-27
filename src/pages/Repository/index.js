@@ -20,6 +20,8 @@ export default function Repository({ match }) {
     const [issues, setIssues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [issueLoading, setIssueLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasData, setHasData] = useState(false);
 
     async function getRepositoryData(repName, state) {
         setIssueLoading(true);
@@ -29,15 +31,14 @@ export default function Repository({ match }) {
             api.get(`/repos/${repName}/issues`, {
                 params: {
                     state,
-                    per_page: 5,
+                    per_page: 30,
+                    page,
                 },
             }),
         ])
             .then(values => {
                 const [repositoryData, issuesData] = values;
-
-                console.log(values);
-
+                setHasData(issuesData.data);
                 setRepository(repositoryData.data);
                 setIssues(issuesData.data);
             })
@@ -48,6 +49,20 @@ export default function Repository({ match }) {
                 setIssueLoading(false);
                 setLoading(false);
             });
+    }
+
+    function handlePagePress(next) {
+        setPage(prev => {
+            const newValue = next ? prev + 1 : prev - 1;
+            return newValue;
+        });
+
+        getRepositoryData(repository.full_name, 'closed');
+    }
+
+    function handleStatusButtonPress(open) {
+        setPage(1);
+        getRepositoryData(repository.full_name, open ? 'open' : 'closed');
     }
 
     useEffect(() => {
@@ -74,57 +89,67 @@ export default function Repository({ match }) {
             <ButtonRow>
                 <button
                     type="button"
-                    onClick={() =>
-                        getRepositoryData(repository.full_name, 'open')
-                    }
+                    onClick={() => handleStatusButtonPress(true)}
                 >
                     Abertas
                 </button>
-                <button
-                    type="button"
-                    onClick={() =>
-                        getRepositoryData(repository.full_name, 'closed')
-                    }
-                >
+                <button type="button" onClick={() => handleStatusButtonPress()}>
                     Fechadas
                 </button>
             </ButtonRow>
 
-            <IssueContent>
+            <IssueContent show={hasData}>
                 {issueLoading ? (
                     <FaSpinner size={30} color="#444" />
                 ) : (
-                    <IssueList>
-                        {issues.map(issue => (
-                            <li key={String(issue.id)}>
-                                <img
-                                    src={issue.user.avatar_url}
-                                    alt={issue.user.login}
-                                />
-                                <div>
-                                    <strong>
-                                        <a
-                                            href={issue.html_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            {issue.title}
-                                        </a>
-                                        {issue.labels.map(label => (
-                                            <Label
-                                                key={String(label.id)}
-                                                textColor={`#${label.color}`}
+                    <>
+                        <IssueList>
+                            {issues.map(issue => (
+                                <li key={String(issue.id)}>
+                                    <img
+                                        src={issue.user.avatar_url}
+                                        alt={issue.user.login}
+                                    />
+                                    <div>
+                                        <strong>
+                                            <a
+                                                href={issue.html_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                             >
-                                                {' '}
-                                                {label.name}{' '}
-                                            </Label>
-                                        ))}
-                                    </strong>
-                                    <p>{issue.user.login}</p>
-                                </div>
-                            </li>
-                        ))}
-                    </IssueList>
+                                                {issue.title}
+                                            </a>
+                                            {issue.labels.map(label => (
+                                                <Label
+                                                    key={String(label.id)}
+                                                    textColor={`#${label.color}`}
+                                                >
+                                                    {' '}
+                                                    {label.name}{' '}
+                                                </Label>
+                                            ))}
+                                        </strong>
+                                        <p>{issue.user.login}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </IssueList>
+                        <ButtonRow>
+                            <button
+                                type="button"
+                                onClick={() => handlePagePress()}
+                                disabled={page <= 1}
+                            >
+                                Anterior
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handlePagePress(true)}
+                            >
+                                Próximo
+                            </button>
+                        </ButtonRow>
+                    </>
                 )}
             </IssueContent>
         </Container>
