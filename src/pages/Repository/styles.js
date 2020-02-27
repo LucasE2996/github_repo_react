@@ -1,4 +1,13 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const rotate = keyframes`
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+`;
 
 export const Owner = styled.header`
     display: flex;
@@ -32,6 +41,17 @@ export const Owner = styled.header`
     }
 `;
 
+export const IssueContent = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 427px;
+
+    svg {
+        animation: ${rotate} 2s linear infinite;
+    }
+`;
+
 export const Loading = styled.div`
     color: #fff;
     font-size: 30px;
@@ -43,9 +63,8 @@ export const Loading = styled.div`
 `;
 
 export const IssueList = styled.ul`
-    padding-top: 30px;
+    width: 100%;
     margin-top: 30px;
-    border-top: 1px solid #eee;
     list-style: none;
 
     li {
@@ -96,4 +115,29 @@ export const Label = styled.span`
     text-align: center;
     margin-left: 10px;
     font-size: 14px;
+`;
+
+export const ButtonRow = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 30px;
+    margin-top: 30px;
+
+    button {
+        background: #7159c1;
+        border: 0;
+        padding: 5px 15px;
+        margin-left: 10px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        font-weight: bold;
+        color: #fff;
+    }
 `;
