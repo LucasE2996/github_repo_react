@@ -48,8 +48,15 @@ export default function Main() {
         setLoading(true);
 
         try {
-            const response = await api.get(`/repos/${newRepo}`);
+            const repoAlreadyExists = repositories.find(repo =>
+                repo.name.includes(newRepo)
+            );
 
+            if (repoAlreadyExists) {
+                throw new Error('Repository already exists');
+            }
+
+            const response = await api.get(`/repos/${newRepo}`);
             const data = {
                 name: response.data.full_name,
             };
