@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -14,7 +14,7 @@ export default function Repository({ match }) {
 
     useEffect(() => {
         async function getRepositoryData(repName) {
-            return await Promise.all([
+            return Promise.all([
                 api.get(`/repos/${repName}`),
                 api.get(`/repos/${repName}/issues`, {
                     params: {
@@ -28,12 +28,10 @@ export default function Repository({ match }) {
         const repName = decodeURIComponent(match.params.name);
 
         getRepositoryData(repName).then(values => {
-            const [repository, issues] = values;
+            const [repositoryData, issuesData] = values;
 
-            console.log(issues);
-
-            setRepository(repository.data);
-            setIssues(issues.data);
+            setRepository(repositoryData.data);
+            setIssues(issuesData.data);
             setLoading(false);
         });
     }, []);
@@ -62,7 +60,11 @@ export default function Repository({ match }) {
                         />
                         <div>
                             <strong>
-                                <a href={issue.html_url} target="_blank">
+                                <a
+                                    href={issue.html_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {issue.title}
                                 </a>
                                 {issue.labels.map(label => (

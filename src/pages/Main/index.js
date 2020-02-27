@@ -17,9 +17,13 @@ export default function Main() {
      * combined together in class component
      */
     useEffect(() => {
-        const repositories = JSON.parse(localStorage.getItem('repositories'));
+        const repositoriesFromCache = JSON.parse(
+            localStorage.getItem('repositories')
+        );
 
-        setRepositories(repositories);
+        if (repositoriesFromCache) {
+            setRepositories(repositoriesFromCache);
+        }
     }, []);
 
     useEffect(() => {
@@ -74,7 +78,11 @@ export default function Main() {
                 {repositories.map(repository => (
                     <li key={repository.name}>
                         <span>{repository.name}</span>
-                        <Link to={`repository/${encodeURIComponent(repository.name)}`}>
+                        <Link
+                            to={`repository/${encodeURIComponent(
+                                repository.name
+                            )}`}
+                        >
                             Detalhes
                         </Link>
                     </li>
