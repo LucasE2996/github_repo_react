@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Form, SubmitButton, List } from './styles';
+import { Form, SubmitButton, List, Input } from './styles';
 
 export default function Main() {
     const [newRepo, setNewRepo] = useState('');
     const [repositories, setRepositories] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [notFound, setNotFound] = useState(false);
 
     /**
      * equivalent to componentDidMount, componentDidUpdate and componentWillUnmount
@@ -31,6 +32,12 @@ export default function Main() {
         localStorage.setItem('repositories', JSON.stringify(repositories));
     }, [repositories]);
 
+    useEffect(() => {
+        if (newRepo === '') {
+            setNotFound(false);
+        }
+    }, [newRepo]);
+
     function handleInputChange(e) {
         setNewRepo(e.target.value);
     }
@@ -40,14 +47,18 @@ export default function Main() {
 
         setLoading(true);
 
-        const response = await api.get(`/repos/${newRepo}`);
+        try {
+            const response = await api.get(`/repos/${newRepo}`);
 
-        const data = {
-            name: response.data.full_name,
-        };
+            const data = {
+                name: response.data.full_name,
+            };
+            setRepositories([...repositories, data]);
+            setNewRepo('');
+        } catch (error) {
+            setNotFound(true);
+        }
 
-        setRepositories([...repositories, data]);
-        setNewRepo('');
         setLoading(false);
     }
 
@@ -59,11 +70,12 @@ export default function Main() {
             </h1>
 
             <Form onSubmit={handleSubmit}>
-                <input
+                <Input
                     type="text"
                     placeholder="Adicionar repositório"
                     value={newRepo}
                     onChange={handleInputChange}
+                    notFound={notFound}
                 />
                 <SubmitButton loading={loading}>
                     {loading ? (

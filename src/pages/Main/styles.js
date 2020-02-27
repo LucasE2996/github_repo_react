@@ -4,14 +4,15 @@ export const Form = styled.form`
     display: flex;
     flex-direction: row;
     margin-top: 30px;
+`;
 
-    input {
-        flex: 1;
-        border: 1px solid #eee;
-        padding: 10px 15px;
-        border-radius: 4px;
-        font-size: 16px;
-    }
+export const Input = styled.input`
+    flex: 1;
+    border: 1px solid #eee;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 16px;
+    border-color: ${props => (props.notFound ? 'red' : '#eee')};
 `;
 
 const rotate = keyframes`
