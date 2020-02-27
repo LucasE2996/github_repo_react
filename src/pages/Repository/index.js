@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import api from '../../services/api';
+
+import Container from '../../components/Container';
+import { Loading, Owner } from './styles';
 
 export default function Repository({ match }) {
     const [repository, setRepository] = useState([]);
@@ -32,7 +36,18 @@ export default function Repository({ match }) {
         });
     }, []);
 
-    return <h1>Repository: {decodeURIComponent(match.params.name)}</h1>;
+    if (loading) {
+        return <Loading>Carregando...</Loading>;
+    }
+
+    return <Container>
+        <Owner>
+            <Link to="/">Voltar aos repositórios</Link>
+            <img src={repository.owner.avatar_url} alt={repository.owner.login} />
+            <h1>{repository.name}</h1>
+            <p>{repository.description}</p>
+        </Owner>
+    </Container>;
 }
 
 Repository.propTypes = {
