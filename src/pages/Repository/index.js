@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner } from './styles';
+import { Loading, Owner, IssueList, Label } from './styles';
 
 export default function Repository({ match }) {
     const [repository, setRepository] = useState([]);
@@ -30,6 +30,8 @@ export default function Repository({ match }) {
         getRepositoryData(repName).then(values => {
             const [repository, issues] = values;
 
+            console.log(issues);
+
             setRepository(repository.data);
             setIssues(issues.data);
             setLoading(false);
@@ -40,14 +42,46 @@ export default function Repository({ match }) {
         return <Loading>Carregando...</Loading>;
     }
 
-    return <Container>
-        <Owner>
-            <Link to="/">Voltar aos repositórios</Link>
-            <img src={repository.owner.avatar_url} alt={repository.owner.login} />
-            <h1>{repository.name}</h1>
-            <p>{repository.description}</p>
-        </Owner>
-    </Container>;
+    return (
+        <Container>
+            <Owner>
+                <Link to="/">Voltar aos repositórios</Link>
+                <img
+                    src={repository.owner.avatar_url}
+                    alt={repository.owner.login}
+                />
+                <h1>{repository.name}</h1>
+                <p>{repository.description}</p>
+            </Owner>
+            <IssueList>
+                {issues.map(issue => (
+                    <li key={String(issue.id)}>
+                        <img
+                            src={issue.user.avatar_url}
+                            alt={issue.user.login}
+                        />
+                        <div>
+                            <strong>
+                                <a href={issue.html_url} target="_blank">
+                                    {issue.title}
+                                </a>
+                                {issue.labels.map(label => (
+                                    <Label
+                                        key={String(label.id)}
+                                        textColor={`#${label.color}`}
+                                    >
+                                        {' '}
+                                        {label.name}{' '}
+                                    </Label>
+                                ))}
+                            </strong>
+                            <p>{issue.user.login}</p>
+                        </div>
+                    </li>
+                ))}
+            </IssueList>
+        </Container>
+    );
 }
 
 Repository.propTypes = {
