@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
 import api from '../../services/api';
 
 export default function Repository({ match }) {
@@ -14,7 +16,7 @@ export default function Repository({ match }) {
                     params: {
                         state: 'open',
                         per_page: 5,
-                    }
+                    },
                 }),
             ]);
         }
@@ -32,3 +34,11 @@ export default function Repository({ match }) {
 
     return <h1>Repository: {decodeURIComponent(match.params.name)}</h1>;
 }
+
+Repository.propTypes = {
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            name: PropTypes.string,
+        }),
+    }).isRequired,
+};
